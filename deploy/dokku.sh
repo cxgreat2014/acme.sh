@@ -4,16 +4,16 @@
 # global wildcard domain's certificate.
 # If your dokku global domain is dokku.example.com
 # and you dokku app is domains-app-enabled
-# and the app's vhost domain have dokku.example.com
-# or like *.dokku.example.com, this script will
-# automatic execute `dokku certs:update app < certs`
+# and the app heve domains like dokku.example.com
+# *.dokku.example.com, this script will
+# automatic execute `dokku certs:update app <certs`
 # to enable and update the app SSL certificate.
 
-_DOKKU_SSL_DOCUMENTATION='http://dokku.viewdocs.io/dokku/configuration/ssl/'
+# DOKKU_SSL_DOCUMENTATION='http://dokku.viewdocs.io/dokku/configuration/ssl/'
 
 ########  Public functions #####################
 
-# dokku_deploy domain keyfile certfile cafile fullchain
+# domain keyfile certfile cafile fullchain
 dokku_deploy() {
   _cdomain="$1"
   _ckey="$2"
@@ -44,12 +44,12 @@ dokku_deploy() {
     app_enable=$(dokku domains:report "$app" --domains-app-enabled)
     if [[ $app_enable == "true" ]]; then
       app_vhosts=$(dokku domains:report "$app" --domains-app-vhosts)
-      _debug "App $app domains: $app_vhosts"
+      _debug "App '$app' domains: $app_vhosts"
       for domain in $app_vhosts; do
-        if [[ $domain == *$_cdomain ]]; then
-          _debug "Update dokku app $app cert"
+        if [[ $domain == "$_cdomain" || $domain == *.$_cdomain ]]; then
+          _debug "Update dokku app '$app' cert"
           dokku certs:update "$app" <cert-key.tar
-          _debug "Dokku app $app cert update finished"
+          _debug "Dokku app '$app' cert update finished"
           break
         fi
       done
